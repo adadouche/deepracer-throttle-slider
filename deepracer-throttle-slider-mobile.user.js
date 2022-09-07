@@ -66,7 +66,6 @@
     // the function that will put the throttle value using axios
     function setCarThrottle(throttle) {
         const payload = "{ \"throttle\": "+ throttle + " }";
-        console.log("throttle : " + throttle);
         console.log("throttle with fetch : " + throttle);
         return fetch("/api/max_nav_throttle", {
             "credentials": "include",
@@ -86,7 +85,53 @@
             "body": "{\"throttle\": " + throttle + "}",
             "method": "PUT",
             "mode": "cors"
-        });
+        });  
+
+        var options = {
+            method: "PUT",
+            url: '/api/max_nav_throttle',
+            data: payload,
+            credentials: "include",
+            mode: "cors",
+            headers: {
+                "Content-Type": "application/json;charset=utf-8",
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                "Sec-Fetch-Dest": "empty",
+                "Sec-Fetch-Mode": "cors",
+                "Sec-Fetch-Site": "same-origin",
+                "Pragma": "no-cache",
+                "Cache-Control": "no-cache"
+            },
+            onload : function(response) {
+                console.log(" onload  " + response.responseText );
+            },
+            onerror: function(response) {
+                console.log(" onerror " + response.responseText );
+            },
+            onabort: function(response) {
+                console.log(" onabort " + response.responseText );
+            },
+            onprogress: function(response) {
+                console.log(" onprogress " + response.responseText );
+            },
+            onreadystatechange: function(response) {
+                console.log(" onreadystatechange " + response.responseText );
+            },
+            ontimeout: function(response) {
+                console.log(" ontimeout " + response.responseText );
+            },
+            
+        };
+
+        if (GM != null) {
+            console.log("GM.");
+            return GM.xmlHttpRequest(options);
+        } else {
+            console.log("GM_");
+            return GM_xmlhttpRequest(options);
+        }
     };
 
     // the debounce functions allows you to throttle the request execution
@@ -170,73 +215,57 @@
         debouncedSetCarThrottle(sliderInput.value);
     }
 
-    // using HTML observer we can detect change in the document
-    // as most content is dynamically generated, we need to use observer as the document will complete its load
-    // before the control to be changed are added
-    function observerFunc(mutations, observer) {
-        console.log(" observerFunc ==> MutationObserver childList change script started");
-        for(var i=0; i<mutations.length; ++i) {
-            if( mutations[i].type === "childList" && mutations[i].addedNodes.length > 0){
-                for(var j = 0; j < mutations[i].addedNodes.length; j++) {
-                    const element = mutations[i].addedNodes[j];
-
-                    const rangeSelector = element.querySelector('.awsui-util-pt-s');
-                    if(!rangeSelector) {
-                        observer.disconnect();
-                        return;
-                    }
-
-                    const throttleDOM = rangeSelector.parentElement;
-
-                    for(var x = 0; x < throttleDOM.childNodes.length; x++) {
-                        throttleDOM.childNodes[x].style.display = 'none';
-                    }
-
-                    addSliderStyle();
-                    addSliderDOM(throttleDOM);
-                }
-            }
-        }
-        console.log(" observerFunc ==> MutationObserver childList change script completed");
-    }
-
     function init() {
-        const observer = new MutationObserver(observerFunc);
+        try {
+            // if the observerExistElement exists then don't add a new observer
+            // this is to prevent multiple execution in parallel
+            const observerExistElement = document.getElementById('observer');
+            if (observerExistElement) {
+                console.log("monkey script already started");
+                return;
+            } else {
+                const element = document.createElement('observer');
+                element.id = 'observer';
+                document.getElementsByTagName("head")[0].appendChild( element );
+            }
 
-        // if the observerExistElement exists then don't add a new observer
-        // this is to prevent multiple execution in parallel
-        const observerExistElement = document.getElementById('observer');
-        if (observerExistElement) {
-            console.log("monkey script already started");
-            return;
-        } else {
-            const element = document.createElement('observer');
-            element.id = 'observer';
-            document.getElementsByTagName("head")[0].appendChild( element );
-        }
+            // TODO: check if the page title is "AWS DeepRacer"
+            // check if there is a "root" element as the page else quit
+            const rootElement = document.getElementById('root');
+            if (!rootElement) {
+                console.log("no root to use yet");
+                return;
+            }
+            const observerElement = rootElement.childNodes[0];
+            if (!observerElement) {
+                console.log("no child to use yet");
+                return;
+            }
+        
+            // observer.observe(rootElement, {childList : true});
+            const rangeSelector = document.querySelector('.awsui-util-pt-s');
+            if(!rangeSelector) {
+                console.log("no rangeSelector to use yet");
+                return;
+            }
 
-        // TODO: check if the page title is "AWS DeepRacer"
-        // check if there is a "root" element as the page else quit
-        const rootElement = document.getElementById('root');
-        if (!rootElement) {
-            console.log("no root to use yet");
-            return;
-        }
-        const observerElement = rootElement.childNodes[0];
-        if (!observerElement) {
-            console.log("no child to use yet");
-            return;
-        }
+            const throttleDOM = rangeSelector.parentElement;
 
-        // now the serious stuff: observe the DOM!
-        observer.observe(observerElement, {childList : true});
+            for(var x = 0; x < throttleDOM.childNodes.length; x++) {
+                throttleDOM.childNodes[x].style.display = 'none';
+            }
+
+            addSliderStyle();
+            addSliderDOM(throttleDOM);            
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     // now the serious stuff
     console.log("monkey script started");
 
-    init();
+    init();    
 
     console.log("monkey script completed");
-
 })();
