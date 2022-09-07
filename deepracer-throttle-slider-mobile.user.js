@@ -85,7 +85,7 @@
             "body": "{\"throttle\": " + throttle + "}",
             "method": "PUT",
             "mode": "cors"
-        });  
+        });
 
         var options = {
             method: "PUT",
@@ -122,7 +122,6 @@
             ontimeout: function(response) {
                 console.log(" ontimeout " + response.responseText );
             },
-            
         };
 
         if (GM != null) {
@@ -217,6 +216,18 @@
 
     function init() {
         try {
+            // if the observerExistElement exists then don't add a new observer
+            // this is to prevent multiple execution in parallel
+            const observerExistElement = document.getElementById('observer');
+            if (observerExistElement) {
+                console.log("monkey script already started");
+                return;
+            } else {
+                const element = document.createElement('observer');
+                element.id = 'observer';
+                document.getElementsByTagName("head")[0].appendChild( element );
+            }
+
             // TODO: check if the page title is "AWS DeepRacer"
             // check if there is a "root" element as the page else quit
             const rootElement = document.getElementById('root');
@@ -229,22 +240,28 @@
                 console.log("no child to use yet");
                 return;
             }
-        
-            // observer.observe(rootElement, {childList : true});
+          
             const rangeSelector = document.querySelector('.awsui-util-pt-s');
+          	console.log(rangeSelector);
             if(!rangeSelector) {
                 console.log("no rangeSelector to use yet");
                 return;
             }
 
+            console.log("hiding the current control");
             const throttleDOM = rangeSelector.parentElement;
-
             for(var x = 0; x < throttleDOM.childNodes.length; x++) {
                 throttleDOM.childNodes[x].style.display = 'none';
             }
+          	console.log("hiding the current control completed");
 
+          	console.log("adding slider style");
             addSliderStyle();
-            addSliderDOM(throttleDOM);            
+            console.log("adding slider style completed");
+            console.log("adding slider");
+            addSliderDOM(throttleDOM);
+          	console.log("adding slider completed");
+            
         } catch (error) {
             console.error(error);
         }
@@ -253,7 +270,7 @@
     // now the serious stuff
     console.log("monkey script started");
 
-    init();    
+    init();
 
-    console.log("monkey script completed");
+    console.log("monkey script completed!!!");
 })();
