@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name		deepracer-throttle-slider
+// @name		deepracer-throttle-slider-mobile
 // @namespace	https://gitlab.aws.dev/aws-sa-global-auto/deepracer-throttle-slider
 // @version		0.1
 // @description	Alter the DeepRacer Throttle Control to a Slider for mobile/tablet device
@@ -217,18 +217,6 @@
 
     function init() {
         try {
-            // if the observerExistElement exists then don't add a new observer
-            // this is to prevent multiple execution in parallel
-            const observerExistElement = document.getElementById('observer');
-            if (observerExistElement) {
-                console.log("monkey script already started");
-                return;
-            } else {
-                const element = document.createElement('observer');
-                element.id = 'observer';
-                document.getElementsByTagName("head")[0].appendChild( element );
-            }
-
             // TODO: check if the page title is "AWS DeepRacer"
             // check if there is a "root" element as the page else quit
             const rootElement = document.getElementById('root');
