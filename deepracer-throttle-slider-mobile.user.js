@@ -2,7 +2,7 @@
 // @name		deepracer-throttle-slider
 // @namespace	https://gitlab.aws.dev/aws-sa-global-auto/deepracer-throttle-slider
 // @version		0.1
-// @description	Alter the DeepRacer Throttle Control to a Slider
+// @description	Alter the DeepRacer Throttle Control to a Slider for mobile/tablet device
 // @author		adadouch
 // @include         https://192.168.*/*
 // @include         https://172.*/*
