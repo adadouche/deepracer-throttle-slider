@@ -4,9 +4,9 @@
 // @version		0.1
 // @description	Alter the DeepRacer Throttle Control to a Slider
 // @author		adadouch
-// @include         https://192.168.*
-// @include         https://172.*
-// @include         https://10.*
+// @include         https://192.168.*/*
+// @include         https://172.*/*
+// @include         https://10.*/*
 // @icon		data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @require		http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js
 // @require     http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js
